@@ -9,7 +9,7 @@ const client = new Client({
   port: 6432
 })
 
-
+const JWT_SECRET_KEY = 'asl292@_asda2rg546'
 
 exports.handler = async event => {
     const headers =  {
@@ -19,9 +19,10 @@ exports.handler = async event => {
     if(body.document) {
       client.connect(async err => {
           if (err) throw err;
-          const res = await client.query(`select * from customer where document = ${body.document}`);
-          if(res.rows) {
-            const token = jwt.sign({ res.rows[0].id }, 'teste', { algorithm: 'RS256' });
+          const { rows } = await client.query(`select * from customer where document = ${body.document}`);
+
+          if(rows && rows.length > 0) {
+            const token = jwt.sign({ customerId: res.rows[0].id }, JWT_SECRET_KEY, { algorithm: 'HS256' });
             return  {
               statusCode: 200,
               headers,
