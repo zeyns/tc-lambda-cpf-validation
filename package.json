@@ -1,0 +1,10 @@
+{
+  "name": "tc-lambda-cpf-validation",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "license": "MIT",
+  "dependencies": {
+    "jsonwebtoken": "9.0.2",
+    "pg": "8.11.3"
+  }
+}
