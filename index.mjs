@@ -1,17 +1,16 @@
-const { Client } = require('pg');
-const jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
+import pg from 'pg'
 
-const client = new Client({
+const client = new pg.Client({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT
-})
+});
 
-const JWT_SECRET_KEY = 'asl292@_asda2rg546'
 
-exports.handler = async event => {
+export const handler = async event => {
     const headers =  {
       'Content-Type': 'application/json',
     }
@@ -24,16 +23,16 @@ exports.handler = async event => {
     }
 
     const body = event.body;
-    if(body.document) {
+    if(body?.document) {
       client.connect(async err => {
           if (err) throw err;
           const { rows } = await client.query(`select * from customer where document = ${body.document}`);
 
           if(rows && rows.length > 0) {
-            const token = jwt.sign({ customerId: res.rows[0].id }, JWT_SECRET_KEY, { algorithm: 'HS256' });
+            const token = jwt.sign({ customerId: rows[0].id }, process.env.JWT_SECRET_KEY, { algorithm: 'HS256' });
             return responseReturn(200, { token });
           }
-          
+
           return responseReturn(401);
       });
     }
